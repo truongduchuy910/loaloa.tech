@@ -29,7 +29,9 @@ export default function Index({
   let [maintains, setMaintains] = useState(allMaintains);
   let [price, setPrice] = useState(0);
   let [maintainPrice, setMaintainPrice] = useState(0);
+  let [guide, setGuide] = useState("Nhấn chọn để báo giá!");
   async function getPrice() {
+    setGuide("Đang tải...");
     let designs_id = [];
     designs.map(design => {
       if (design.choosed) designs_id.push(design.id);
@@ -42,42 +44,57 @@ export default function Index({
     maintains.map(maintain => {
       if (maintain.choosed) maintains_id.push(maintain.id);
     });
+    if (!designs_id.length) {
+      setGuide("Vui lòng chọn Giao diện");
+      return false;
+    }
+    if (!settings_id.length) {
+      setGuide("Vui lòng chọn Chức năng");
+      return false;
+    }
     let res = await request(
       url,
-      `query($designs: [ID], $settings: [ID], $maintains: [ID]) {
-  design: allPricings(where: { design_every: { id_in: $designs } }) {
-    price
-  }
-  setting: allPricings(where: { setting_every: { id_in: $settings } }) {
-    price
-  }
+      `query($designs: [ID!], $settings: [ID!], $maintains: [ID!]) {
   intergrate: allPricings(
     where: {
       design_every: { id_in: $designs }
       setting_every: { id_in: $settings }
+      maintain_every: { id: null }
     }
   ) {
+    design {
+      name
+    }
+    setting {
+      name
+    }
     price
   }
-  maintain: allPricings(where: { maintain_every: { id_in: $maintains } }) {
+  maintain: allPricings(
+    where: {
+      design_every: null
+      setting_every: null
+      maintain_some: { id_in: $maintains }
+    }
+  ) {
     price
   }
 }`,
       { designs: designs_id, settings: settings_id, maintains: maintains_id }
     );
+    console.log(res);
     let sum = 0;
-    let { design, setting, intergrate, maintain } = res;
-    design.map(e => (sum += e.price));
-    setting.map(e => (sum += e.price));
+    let { intergrate, maintain } = res;
+    intergrate.map(e => (sum += e.price));
     setPrice(sum);
     sum = 0;
     maintain.map(e => (sum += e.price));
     setMaintainPrice(sum);
+    setGuide("Dự toán!");
   }
   useEffect(() => {
     window.addEventListener("resize", setWidth(window.innerWidth));
     window.addEventListener("resize", setHeight(window.innerHeight));
-    getPrice();
   });
   return (
     <Grid container spacing={0} justify="center" alignItems="center">
@@ -163,8 +180,9 @@ export default function Index({
             BẠN CÓ YÊU CẦU GÌ?
           </Typography>
           <Typography variant="h5" align="center" style={{ fontWeight: 800 }}>
-            Nhấn chọn để báo giá!
+            {guide}
           </Typography>
+
           <Typography variant="body1" color="primary" align="center">
             {formatMoney(price, 0)} - đ
           </Typography>
@@ -192,6 +210,7 @@ export default function Index({
                 setting.choosed = !Boolean(setting.choosed);
                 let newSettinngs = [...settings];
                 setSettings(newSettinngs);
+                getPrice();
               }}
               color={setting.choosed ? "primary" : "default"}
               variant="outlined"
@@ -213,6 +232,7 @@ export default function Index({
                 design.choosed = !Boolean(design.choosed);
                 let newDesigns = [...designs];
                 setDesigns(newDesigns);
+                getPrice();
               }}
               color={design.choosed ? "primary" : "default"}
               variant="outlined"
@@ -235,6 +255,7 @@ export default function Index({
                 maintain.choosed = !Boolean(maintain.choosed);
                 let newMaintain = [...maintains];
                 setMaintains(newMaintain);
+                getPrice();
               }}
               color={maintain.choosed ? "primary" : "default"}
               variant="outlined"

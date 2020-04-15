@@ -19340,7 +19340,7 @@ function (_App) {
           lineNumber: 24
         },
         __self: this
-      }, "T\u1EED Vi Logic"), __jsx("meta", {
+      }, "Loa Loa Team"), __jsx("meta", {
         name: "viewport",
         content: "minimum-scale=1, initial-scale=1, width=device-width",
         __source: {
