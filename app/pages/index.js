@@ -45,21 +45,21 @@ export default function Index({
     let res = await request(
       url,
       `query($designs: [ID], $settings: [ID], $maintains: [ID]) {
-  design: allPricings(where: { design_some: { id_in: $designs } }) {
+  design: allPricings(where: { design_every: { id_in: $designs } }) {
     price
   }
-  setting: allPricings(where: { setting_some: { id_in: $settings } }) {
+  setting: allPricings(where: { setting_every: { id_in: $settings } }) {
     price
   }
   intergrate: allPricings(
     where: {
-      design_some: { id_in: $designs }
-      setting_some: { id_in: $settings }
+      design_every: { id_in: $designs }
+      setting_every: { id_in: $settings }
     }
   ) {
     price
   }
-  maintain: allPricings(where: { maintain_some: { id_in: $maintains } }) {
+  maintain: allPricings(where: { maintain_every: { id_in: $maintains } }) {
     price
   }
 }`,
