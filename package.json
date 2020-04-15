@@ -9,9 +9,9 @@
     "node": ">=8.4.0"
   },
   "scripts": {
-    "dev": "cross-env NODE_ENV=development cross-env PORT=8000 DISABLE_LOGGING=true keystone dev",
-    "build": "cross-env NODE_ENV=production cross-env PORT=8000 keystone build",
-    "start": "cross-env NODE_ENV=production cross-env PORT=8000 keystone start",
+    "dev": "cross-env NODE_ENV=development cross-env PORT=8001 DISABLE_LOGGING=true keystone dev",
+    "build": "cross-env NODE_ENV=production cross-env PORT=8001 keystone build",
+    "start": "cross-env NODE_ENV=production cross-env PORT=8001 keystone start",
     "test": "mocha"
   },
   "dependencies": {
